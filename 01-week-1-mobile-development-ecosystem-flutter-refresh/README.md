@@ -1,7 +1,7 @@
 Checklist verifikasi
-    flutter doctor tidak memiliki masalah yang menghambat target Android. ✅
-    flutter devices mendeteksi emulator/perangkat fisik.✅
-    Aplikasi berjalan dan UI default telah diganti dengan profil sederhana.✅
+    flutter doctor tidak memiliki masalah yang menghambat target Android. ✅ ![Screenshot Aplikasi](screenshots/verifikasi_flutter_doctor.png)
+    flutter devices mendeteksi emulator/perangkat fisik.✅ ![Screenshot Aplikasi](screenshots/verifikasi_flutter_devices.png.png)
+    Aplikasi berjalan dan UI default telah diganti dengan profil sederhana.✅ ![Screenshot Aplikasi](screenshots/tugas%201.png.png)
     Anda dapat menjelaskan perbedaan hot reload dan hot restart.✅
     Repository remote berisi source code, README, screenshot, dan riwayat commit.✅
 
