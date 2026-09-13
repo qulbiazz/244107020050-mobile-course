@@ -53,3 +53,4 @@ Tidak. Kode tidak menggunakan StateProvider maupun StateNotifierProvider. Implem
 3. UI AsyncValue menangani loading, error, dan success, bukan hanya success.✅
 4. flutter analyze tanpa issue dan semua test lulus.✅
 5. Hasil AI diverifikasi dan didokumentasikan pada folder docs/.✅
+![file](docs/README.MD)
