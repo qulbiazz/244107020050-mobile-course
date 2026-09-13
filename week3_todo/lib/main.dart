@@ -10,6 +10,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
         title: 'Week 3 - ToDo',
         theme: ThemeData(colorSchemeSeed: Colors.teal, useMaterial3: true),
-        home: const TodoPage(),
+        home: const ProductPage(),
       );
 }

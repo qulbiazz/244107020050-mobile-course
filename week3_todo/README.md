@@ -1,16 +1,17 @@
-# week3_todo
+# Praktikum 3 — Uji ketiga state
+1. Salin kode di atas ke project ToDo Anda (atau project terpisah) dan jalankan. Amati tampilan loading selama 2 detik pertama.
 
-A new Flutter project.
+Aplikasi menampilkan loading terlebih dahulu, kemudian menampilkan daftar data setelah proses pemuatan selesai.
 
-## Getting Started
+2. Ubah build() sementara untuk melempar error: throw Exception('Gagal terhubung ke server');. Jalankan dan amati UI error beserta tombol Coba lagi.
 
-This project is a starting point for a Flutter application.
+State error digunakan untuk memberikan informasi kepada pengguna bahwa data gagal dimuat dan menyediakan pilihan untuk mencoba kembali.
 
-A few resources to get you started if this is your first Flutter project:
+3. Tekan tombol Coba lagi, ref.invalidate membuat provider dijalankan ulang. Pulihkan kode, pastikan state success tampil.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+ref.invalidate() dapat digunakan untuk memicu provider agar melakukan proses pemuatan ulang dari awal.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+4. Refleksikan: mengapa menampilkan ulang data lama (stale data) dengan indikator refresh kadang lebih baik daripada mengosongkan layar? Kapan pola itu penting?
+
+Menampilkan data lama (stale data) dengan indikator refresh terkadang lebih baik daripada mengosongkan layar karena pengguna masih dapat melihat informasi yang sebelumnya sudah tersedia selama data baru sedang dimuat.
+Pola stale data penting ketika proses pemuatan data membutuhkan waktu, koneksi internet tidak stabil, atau data sebelumnya masih cukup relevan untuk digunakan sementara. Contohnya pada aplikasi berita, dashboard, media sosial, atau daftar transaksi.
