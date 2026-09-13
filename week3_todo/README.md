@@ -45,3 +45,11 @@ Tidak. Kode tidak menggunakan StateProvider maupun StateNotifierProvider. Implem
 
 ![screenshoots](screenshoots/flutter_analyze.png)
 ![screenshoots](screenshoots/flutter_test.png)
+
+
+# Checklist verifikasi mandiri
+1. Navigasi GoRouter bekerja: pindah halaman, back, dan akses path detail langsung.✅
+2. ProviderScope membungkus root aplikasi; state ToDo bertahan saat berpindah halaman.✅
+3. UI AsyncValue menangani loading, error, dan success, bukan hanya success.✅
+4. flutter analyze tanpa issue dan semua test lulus.✅
+5. Hasil AI diverifikasi dan didokumentasikan pada folder docs/.✅

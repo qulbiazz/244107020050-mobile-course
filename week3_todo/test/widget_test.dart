@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'package:week3_todo/main.dart';
+import 'package:week3_todo/pages/stats_page.dart';
 
 void main() {
-  testWidgets('StatsPage menampilkan loading saat pertama kali dibuka',
-      (WidgetTester tester) async {
-    // Menjalankan aplikasi dengan ProviderScope
-    // agar Riverpod dapat digunakan.
-    await tester.pumpWidget(
-      const ProviderScope(
-        child: StatsApp(),
-      ),
-    );
+  testWidgets('menambah tugas baru', (tester) async {
+    await tester.pumpWidget(const ProviderScope(child: StatsPage()));
+    expect(find.text('Belum ada tugas'), findsOneWidget);
 
-    // Pada awal proses, data membutuhkan waktu 2 detik.
-    // Maka UI seharusnya menampilkan CircularProgressIndicator.
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField), 'Kerjakan PR minggu 3');
+    await tester.tap(find.text('Tambah'));
+    await tester.pump();
+
+    expect(find.text('Kerjakan PR minggu 3'), findsOneWidget);
   });
 }
