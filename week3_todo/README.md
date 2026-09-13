@@ -15,3 +15,33 @@ ref.invalidate() dapat digunakan untuk memicu provider agar melakukan proses pem
 
 Menampilkan data lama (stale data) dengan indikator refresh terkadang lebih baik daripada mengosongkan layar karena pengguna masih dapat melihat informasi yang sebelumnya sudah tersedia selama data baru sedang dimuat.
 Pola stale data penting ketika proses pemuatan data membutuhkan waktu, koneksi internet tidak stabil, atau data sebelumnya masih cukup relevan untuk digunakan sementara. Contohnya pada aplikasi berita, dashboard, media sosial, atau daftar transaksi.
+
+
+
+
+# Sebelum kode AI diterima, verifikasi hal berikut dan catat temuan Anda di README:
+
+1. Apakah state diubah secara immutable (tidak ada state.add() atau mutasi list langsung)?
+
+Ya. State pada aplikasi sudah diubah secara immutable. Tidak ditemukan penggunaan state.add() atau perubahan langsung terhadap list yang sedang digunakan. Setiap perubahan state menghasilkan nilai/list baru sehingga state sebelumnya tidak dimodifikasi secara langsung.
+
+2. Apakah ref.watch hanya dipakai di dalam build, dan ref.read di callback?
+
+Ya. ref.watch(statsProvider) digunakan di dalam method build() untuk memantau perubahan data statistik. Sementara itu, ref.read(statsProvider.notifier) digunakan pada callback tombol Coba Lagi untuk menjalankan proses retry. Penggunaannya sudah sesuai dengan pola Riverpod.
+
+3. Apakah ketiga state AsyncValue benar-benar ditangani (bukan hanya success)?
+
+Ya. Ketiga kondisi AsyncValue sudah ditangani menggunakan when(). Kondisi loading menampilkan CircularProgressIndicator, kondisi error menampilkan pesan kesalahan dan tombol Coba Lagi, sedangkan kondisi data/success menampilkan tiga data statistik dalam ListView.
+
+4. Apakah provider dideklarasikan dengan tipe eksplisit dan tidak duplikat dengan provider lain?
+
+Ya. Provider telah menggunakan tipe yang eksplisit, yaitu AsyncNotifierProvider<StatsNotifier, List<String>>. Selain itu, tidak terdapat deklarasi statsProvider yang duplikat dengan provider lainnya sehingga pengelolaan state tetap terstruktur.
+
+5. Apakah kode AI memakai API Riverpod versi lama (StateProvider antipattern, StateNotifierProvider usang, atau Consumer bertingkat yang tidak perlu)? Perbaiki ke pola Notifier/ConsumerWidget.
+
+Tidak. Kode tidak menggunakan StateProvider maupun StateNotifierProvider. Implementasi menggunakan AsyncNotifier untuk mengelola state asynchronous dan ConsumerWidget untuk membaca state pada halaman. Pola ini lebih sesuai dengan penggunaan Riverpod saat ini dan tidak memerlukan Consumer bertingkat.
+
+6. Jalankan flutter analyze dan flutter test, apakah hasil AI lolos tanpa warning?
+
+![screenshoots](screenshoots/flutter_analyze.png)
+![screenshoots](screenshoots/flutter_test.png)
