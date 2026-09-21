@@ -1,0 +1,27 @@
+/// Model satu komentar dari endpoint JSONPlaceholder `/comments`.
+class Comment {
+  const Comment({
+    required this.postId,
+    required this.id,
+    required this.name,
+    required this.email,
+    required this.body,
+  });
+
+  final int postId;
+  final int id;
+  final String name;
+  final String email;
+  final String body;
+
+  /// Membuat model dari JSON dan memakai nilai default bila field tidak ada.
+  factory Comment.fromJson(Map<String, dynamic> json) {
+    return Comment(
+      postId: (json['postId'] as num?)?.toInt() ?? 0,
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      name: json['name'] as String? ?? '',
+      email: json['email'] as String? ?? '',
+      body: json['body'] as String? ?? '',
+    );
+  }
+}
