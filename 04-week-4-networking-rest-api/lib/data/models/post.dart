@@ -11,12 +11,13 @@ class Post {
   final String title;
   final String body;
 
-  factory Post.fromJson(Map<String, dynamic> json) {
+  factory Post.fromJson(Map<String, dynamic>? json) {
+    final map = json ?? const <String, dynamic>{};
     return Post(
-      userId: (json['userId'] as num?)?.toInt() ?? 0,
-      id: (json['id'] as num?)?.toInt() ?? 0,
-      title: json['title'] as String? ?? '',
-      body: json['body'] as String? ?? '',
+      userId: (map['userId'] as num?)?.toInt() ?? 0,
+      id: (map['id'] as num?)?.toInt() ?? 0,
+      title: map['title'] as String? ?? '',
+      body: map['body'] as String? ?? '',
     );
   }
 

@@ -1,45 +1,63 @@
-# Uji tiga skenario error
-1. Jalankan aplikasi dengan internet normal, amati loading lalu daftar 100 posts.
--> Aplikasi menampilkan loading, lalu berhasil menampilkan 100 posts dari JSONPlaceholder.
+# Week 4 - Networking REST API
 
-2. Matikan internet (mode pesawat), tekan refresh, amati pesan ramah + tombol Coba lagi. Nyalakan kembali internet, tekan Coba lagi.
--> Setelah menekan refresh, muncul pesan: Tidak dapat terhubung ke server. Periksa internet Anda. Tombol Coba lagi juga muncul. Setelah internet dinyalakan kembali dan tombol ditekan, daftar posts tampil lagi.
+Aplikasi Flutter ini menampilkan daftar posting dari JSONPlaceholder melalui arsitektur repository + Riverpod dengan pagination dasar, handling loading/error/empty/success, dan integrasi Dio yang terpusat.
 
-3. Sementara ubah baseUrl menjadi URL salah, amati pesan error koneksi. Kembalikan setelah uji.
--> baseUrl salah: Aplikasi menampilkan pesan error koneksi: Tidak dapat terhubung ke server. Periksa internet Anda.
+## Tujuan
 
+Proyek ini dibuat untuk memenuhi tugas minggu ke-4 dalam materi Pemrograman Mobile tentang networking, REST API, state management, dan testing. Fokus utamanya adalah:
 
+- mengambil data dari API publik tanpa key
+- memisahkan akses data dari UI melalui repository
+- mengelola state menggunakan Riverpod
+- menerapkan pagination infinite scroll
+- menyiapkan dokumentasi AI challenge dan hasil evaluasi
 
-# AI Verification Checklist
-Sebelum kode AI diterima, verifikasi hal berikut dan catat temuan Anda di README:
-1. Apakah UI memanggil Dio secara langsung (dilarang) atau lewat repository?
--> UI mengakses data melalui provider dan repository. UI tidak memanggil Dio secara langsung.
+## Fitur utama
 
+- Data dari JSONPlaceholder `/posts`
+- Repository pattern untuk data access
+- Dio dengan base URL, timeout, dan interceptor logging
+- Model `Post.fromJson` yang aman terhadap null
+- State: loading, error + retry, empty, dan success
+- Infinite scroll 10 item per halaman
+- Guard anti-request ganda saat pagination berjalan
+- Test unit/provider yang relevan
 
-2. Apakah fromJson aman null, atau masih memakai cast langsung yang bisa crash?
--> `Post.fromJson` dan `Comment.fromJson` memakai cast nullable serta nilai default. Field yang hilang atau null tidak menyebabkan crash.
+## Stack teknologi
 
+- Flutter
+- Dart
+- Dio
+- Riverpod
+- Go Router
 
-3. Apakah semua tipe DioExceptionType (timeout, connectionError, badResponse) dipetakan ke pesan pengguna?
--> Ya. Timeout, connection error, bad response 404, bad response 500, serta error jaringan lain dipetakan ke pesan yang ramah pengguna melalui `friendlyErrorMessage`.
+## Struktur proyek
 
+- lib/
+- test/
+- docs/
+- screenshots/
+- README.md
 
-4. Apakah baseUrl/timeout terpusat di satu client, bukan tersebar di tiap method?
--> `baseUrl` dan timeout default terpusat di `api_client.dart`. `CommentRepository` juga menetapkan timeout 10 detik secara eksplisit pada request komentar agar kontrak endpoint terlihat jelas; nilainya tetap konsisten dengan client.
+## Cara menjalankan
 
+```bash
+cd "d:/Kuliah/Kelas/Semester 5/Pemrograman Mobile/TUGAS/244107020050-mobile-course/04-week-4-networking-rest-api"
+flutter pub get
+flutter run
+```
 
-5. Apakah test AI benar-benar menguji kasus field hilang, atau hanya happy path Tambahkan minimal 1 edge case sendiri.
--> Test `comment_test.dart` menguji edge case map JSON kosong. Test memverifikasi seluruh field memakai nilai default saat field hilang, bukan hanya happy path.
+## Hasil yang dicapai
 
+- UI menampilkan daftar post dari API publik
+- Aplikasi siap menangani kondisi error dan retry
+- Paging terbatas pada 10 item per request dan mencegah request duplikat
+- Dapat diuji secara otomatis dengan unit dan provider test
+- Dokumentasi AI challenge tersedia di folder docs/
 
-6. Jalankan flutter analyze dan flutter test, apakah hasil AI lolos tanpa warning?
--> `flutter analyze` berhasil tanpa masalah. Test `comment_test.dart` berhasil. `flutter test` masih gagal pada `widget_test.dart` lama karena test tersebut mengharapkan counter, sedangkan aplikasi sekarang menampilkan `PagedPostPage`; kegagalan ini tidak berasal dari comments layer.
+## Dokumentasi tambahan
 
-
-# Checklist verifikasi mandiri
-- [x] UI tidak memanggil Dio langsung; semua akses data lewat repository + provider.
-- [x] Empat state tersedia: loading, error dengan retry, empty, dan success.
-- [x] Pagination menambah data saat scroll, mencegah request ganda saat loading, dan menampilkan indikator akhir data.
-- [x] `flutter analyze` selesai tanpa issue.
-- [!] Test model/repository/provider lulus; `test/widget_test.dart` masih gagal karena merupakan test counter lama yang tidak sesuai dengan `PagedPostPage` saat ini.
-- [x] Hasil verifikasi didokumentasikan pada [docs/verification.md](docs/verification.md).
+- [docs/ai_challenge.md](docs/ai_challenge.md)
+- [docs/ai_prompt.md](docs/ai_prompt.md)
+- [docs/technical_decisions.md](docs/technical_decisions.md)
+- [docs/verification.md](docs/verification.md)
