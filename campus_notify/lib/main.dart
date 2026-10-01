@@ -8,27 +8,28 @@ import 'messaging/push_service.dart';
 import 'pages/announcement_page.dart';
 import 'pages/home_page.dart';
 import 'pages/login_page.dart';
+import 'routes.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    initialLocation: '/login',
+    initialLocation: AppRoutes.login,
     routes: [
       GoRoute(
-        path: '/login',
+        path: AppRoutes.login,
         builder: (context, state) {
           return const LoginPage();
         },
       ),
 
       GoRoute(
-        path: '/',
+        path: AppRoutes.home,
         builder: (context, state) {
           return const HomePage();
         },
       ),
 
       GoRoute(
-        path: '/pengumuman/:id',
+        path: AppRoutes.announcement,
         builder: (context, state) {
           return AnnouncementPage(
             id: state.pathParameters['id'] ?? '',
