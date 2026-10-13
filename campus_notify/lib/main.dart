@@ -31,9 +31,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.announcement,
         builder: (context, state) {
-          return AnnouncementPage(
-            id: state.pathParameters['id'] ?? '',
-          );
+          return AnnouncementPage(id: state.pathParameters['id'] ?? '');
         },
       ),
     ],
@@ -53,8 +51,7 @@ Future<void> main() async {
   await initLocalNotifications();
 
   // 4. Permission
-  final settings =
-      await FirebaseMessaging.instance.requestPermission(
+  final settings = await FirebaseMessaging.instance.requestPermission(
     alert: true,
     badge: true,
     sound: true,
@@ -66,37 +63,26 @@ Future<void> main() async {
   );
 
   // 5. Ambil FCM Token
-  final token =
-      await FirebaseMessaging.instance.getToken();
+  final token = await FirebaseMessaging.instance.getToken();
 
   debugPrint('FCM TOKEN: $token');
 
   // 6. Subscribe topic
-  await FirebaseMessaging.instance
-      .subscribeToTopic('pengumuman-kampus');
+  await FirebaseMessaging.instance.subscribeToTopic('pengumuman-kampus');
 
-  debugPrint(
-    'Subscribed to topic: pengumuman-kampus',
-  );
+  debugPrint('Subscribed to topic: pengumuman-kampus');
 
-  runApp(
-    const ProviderScope(
-      child: CampusNotifyApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: CampusNotifyApp()));
 }
 
 class CampusNotifyApp extends ConsumerStatefulWidget {
   const CampusNotifyApp({super.key});
 
   @override
-  ConsumerState<CampusNotifyApp> createState() =>
-      _CampusNotifyAppState();
+  ConsumerState<CampusNotifyApp> createState() => _CampusNotifyAppState();
 }
 
-class _CampusNotifyAppState
-    extends ConsumerState<CampusNotifyApp> {
-
+class _CampusNotifyAppState extends ConsumerState<CampusNotifyApp> {
   @override
   void initState() {
     super.initState();

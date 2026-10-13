@@ -1,9 +1,7 @@
 import 'package:dio/dio.dart';
 
 class ApiErrors {
-  static String messageFromDioException(
-    DioException exception,
-  ) {
+  static String messageFromDioException(DioException exception) {
     switch (exception.type) {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
@@ -14,8 +12,7 @@ class ApiErrors {
         return 'Tidak dapat terhubung ke server. Periksa koneksi internet.';
 
       case DioExceptionType.badResponse:
-        final statusCode =
-            exception.response?.statusCode;
+        final statusCode = exception.response?.statusCode;
 
         switch (statusCode) {
           case 401:

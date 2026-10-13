@@ -49,3 +49,83 @@ Untuk informasi personal seperti nilai atau tagihan, token perangkat lebih sesua
 Bagian yang perlu diperiksa dan diperbaiki adalah lifecycle notification dan keamanan token. Implementasi akhir menggunakan background handler top-level, @pragma('vm:entry-point'), foreground local notification, onMessageOpenedApp, getInitialMessage, parsing data.route, serta onTokenRefresh.
 
 Selain itu, token tidak seharusnya dicetak secara penuh pada log atau dimasukkan ke screenshot dokumentasi.
+
+
+# WEEK 7 CLEAN ARCHITECTUR
+
+# Usulan AI vs Keputusan Final
+
+| Aspek | Usulan | Keputusan final | Alasan |
+|---|---|---|---|
+| Feature-first | Memisahkan `auth` dan `announcements` | Diterapkan | Memudahkan pemeliharaan per fitur. |
+| Repository interface | Ditempatkan di `domain/repositories/` | Diterapkan | Domain hanya mengenal kontrak. |
+| Repository implementation | Ditempatkan di `data/repositories/` | Diterapkan | Implementasi mengelola akses eksternal. |
+| Entity dan model | Dipisahkan | Diterapkan bila diperlukan | Entity tidak menangani serialisasi API. |
+| Use case untuk setiap CRUD | Membuat use case `get`, `create`, `update`, dan `delete` | Ditolak jika hanya meneruskan satu pemanggilan | Menambah boilerplate tanpa logika tambahan. |
+| Use case dengan aturan bisnis | Membuat use case khusus | Diterapkan bila diperlukan | Berguna untuk validasi kompleks, orkestrasi, atau proses bisnis yang digunakan ulang. |
+| Dependency injection | Menggunakan Riverpod | Diterapkan | Tidak memerlukan package DI tambahan. |
+| FCM | Memisahkan service notifikasi | Diterapkan | Memisahkan SDK notifikasi dari UI dan navigasi. |
+| Semua kode dimasukkan ke `core/` | Menjadikan `core` tempat kode bersama | Ditolak | `core` hanya untuk kebutuhan lintas fitur. |
+
+## Kesimpulan
+
+Clean Architecture tidak berarti setiap operasi harus mempunyai banyak lapisan. Tujuan utama refactor ini adalah memisahkan tanggung jawab, menjaga domain tetap independen, dan mempermudah pengujian. Use case dibuat saat memiliki aturan bisnis atau orkestrasi yang nyata, bukan hanya untuk meneruskan pemanggilan repository.
+
+# Dokumentasi AI Challenge — Campus Notify
+
+Folder ini berisi dokumentasi evaluasi AI Challenge untuk penerapan Clean Architecture pada aplikasi Campus Notify.
+
+## Isi Dokumentasi
+
+- `AI_CHALLENGE.md`: prompt AI, usulan struktur folder, pemetaan file, dan wiring Riverpod.
+- `DECISION_TABLE.md`: perbandingan usulan AI dan keputusan teknis final.
+- `VERIFICATION.md`: perintah grep dan hasil verifikasi arsitektur.
+
+## Checklist Sebelum Demo
+
+- [✓] Repository interface berada di domain.
+- [✓] Repository implementation berada di data.
+- [✓] Domain tidak mengimpor Flutter, Dio, SQLite, atau Firebase.
+- [✓] Entity tidak menangani serialisasi API.
+- [✓] UI tidak memanggil Dio secara langsung.
+- [✓] Wiring dependency menggunakan Riverpod.
+- [✓] Keputusan mengenai use case didokumentasikan.
+- [✓] Hasil tiga grep dicatat berdasarkan output aktual.
+- [✓] `flutter analyze` telah dijalankan.
+- [✓] Hasil `flutter test` dicatat secara jujur.
+[!hasil screenshots](screenshots/week7_flutter-analyze.png)
+[!hasil screenshots](screenshots/)
+[!hasil screenshots](screenshots/week7_flutter-analyze.png)
+[!hasil screenshots](screenshots/week7_flutter-analyze.png)
+
+
+# WEEK 7 
+# Dokumentasi AI Challenge — Campus Notify
+
+Folder ini berisi dokumentasi evaluasi AI Challenge untuk penerapan Clean Architecture pada aplikasi Campus Notify.
+
+## Isi Dokumentasi
+
+- `AI_CHALLENGE.md`: prompt AI, usulan struktur folder, pemetaan file, dan wiring Riverpod.
+- `DECISION_TABLE.md`: perbandingan usulan AI dan keputusan teknis final.
+- `VERIFICATION.md`: perintah grep dan hasil verifikasi arsitektur.
+
+## Checklist Sebelum Demo
+
+- [✓] Repository interface berada di domain.
+- [✓] Repository implementation berada di data.
+- [✓] Domain tidak mengimpor Flutter, Dio, SQLite, atau Firebase.
+- [✓] Entity tidak menangani serialisasi API.
+- [✓] UI tidak memanggil Dio secara langsung.
+- [✓] Wiring dependency menggunakan Riverpod.
+- [✓] Keputusan mengenai use case didokumentasikan.
+- [✓] Hasil tiga grep dicatat berdasarkan output aktual.
+- [✓] `flutter analyze` telah dijalankan.
+- [✓] Hasil `flutter test` dicatat secara jujur.
+
+[!hasil screenshots](screenshots/week7_flutter-analyze.png)
+[!hasil screenshots](screenshots/week7_struktur-folder.png)
+[!hasil screenshots](screenshots/week7_tampilan-andorid.png)
+[!Dokumentas](docs/AI_CHALLENGE.md)
+[!Dokumentas](docs/DECISION_TABLE.md)
+[!Dokumentas](docs/VERIFICATION.md)

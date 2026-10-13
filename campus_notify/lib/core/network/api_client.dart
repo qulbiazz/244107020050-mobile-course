@@ -18,8 +18,7 @@ class ApiClient {
           final accessToken = await tokenStore.readAccess();
 
           if (accessToken != null && accessToken.isNotEmpty) {
-            options.headers['Authorization'] =
-                'Bearer $accessToken';
+            options.headers['Authorization'] = 'Bearer $accessToken';
           }
 
           handler.next(options);
@@ -49,8 +48,7 @@ class ApiClient {
             }
 
             // Minta access token baru.
-            final newAccessToken =
-                await authRepository.refresh(refreshToken);
+            final newAccessToken = await authRepository.refresh(refreshToken);
 
             // Simpan access token baru dan pertahankan refresh token.
             await tokenStore.save(
@@ -59,8 +57,7 @@ class ApiClient {
             );
 
             // Gunakan access token baru.
-            request.headers['Authorization'] =
-                'Bearer $newAccessToken';
+            request.headers['Authorization'] = 'Bearer $newAccessToken';
 
             // Ulangi request sebelumnya.
             final response = await dio.fetch(request);

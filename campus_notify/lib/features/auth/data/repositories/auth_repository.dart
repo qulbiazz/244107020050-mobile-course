@@ -1,8 +1,5 @@
 class AuthSession {
-  const AuthSession({
-    required this.access,
-    required this.refresh,
-  });
+  const AuthSession({required this.access, required this.refresh});
 
   final String access;
   final String refresh;
@@ -13,14 +10,10 @@ class AuthRepository {
     required String email,
     required String password,
   }) async {
-    await Future.delayed(
-      const Duration(milliseconds: 500),
-    );
+    await Future.delayed(const Duration(milliseconds: 500));
 
     if (!email.contains('@') || password.length < 6) {
-      throw Exception(
-        'Email atau kata sandi tidak valid',
-      );
+      throw Exception('Email atau kata sandi tidak valid');
     }
 
     return AuthSession(
@@ -30,9 +23,7 @@ class AuthRepository {
   }
 
   Future<String> refresh(String refreshToken) async {
-    await Future.delayed(
-      const Duration(milliseconds: 300),
-    );
+    await Future.delayed(const Duration(milliseconds: 300));
 
     if (refreshToken.isEmpty) {
       throw Exception('Refresh token hilang');

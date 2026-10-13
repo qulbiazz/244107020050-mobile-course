@@ -7,12 +7,10 @@ class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  ConsumerState<LoginPage> createState() =>
-      _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState
-    extends ConsumerState<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
@@ -26,46 +24,33 @@ class _LoginPageState
   Future<void> login() async {
     await ref
         .read(authStateProvider.notifier)
-        .login(
-          emailController.text.trim(),
-          passwordController.text,
-        );
+        .login(emailController.text.trim(), passwordController.text);
 
     if (!mounted) return;
 
-    final state =
-        ref.read(authStateProvider);
+    final state = ref.read(authStateProvider);
 
     if (state.hasError) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            state.error.toString(),
-          ),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(state.error.toString())));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final authState =
-        ref.watch(authStateProvider);
+    final authState = ref.watch(authStateProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Campus Notify'),
-      ),
+      appBar: AppBar(title: const Text('Campus Notify')),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
-          mainAxisAlignment:
-              MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
               controller: emailController,
-              keyboardType:
-                  TextInputType.emailAddress,
+              keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(
                 labelText: 'Email',
                 border: OutlineInputBorder(),
@@ -88,13 +73,11 @@ class _LoginPageState
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed:
+                onPressed: authState.isLoading ? null : login,
+                child:
                     authState.isLoading
-                        ? null
-                        : login,
-                child: authState.isLoading
-                    ? const CircularProgressIndicator()
-                    : const Text('Login'),
+                        ? const CircularProgressIndicator()
+                        : const Text('Login'),
               ),
             ),
           ],

@@ -14,19 +14,13 @@ class HomePage extends ConsumerWidget {
         actions: [
           IconButton(
             onPressed: () {
-              ref
-                  .read(authStateProvider.notifier)
-                  .logout();
+              ref.read(authStateProvider.notifier).logout();
             },
             icon: const Icon(Icons.logout),
           ),
         ],
       ),
-      body: const Center(
-        child: Text(
-          'Selamat datang di Campus Notify',
-        ),
-      ),
+      body: const Center(child: Text('Selamat datang di Campus Notify')),
     );
   }
 }
