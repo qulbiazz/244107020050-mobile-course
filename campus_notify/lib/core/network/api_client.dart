@@ -1,8 +1,6 @@
-import 'package:campus_notify/data/token_store.dart';
+import 'package:campus_notify/features/auth/data/datasources/token_store.dart';
+import 'package:campus_notify/features/auth/data/repositories/auth_repository.dart';
 import 'package:dio/dio.dart';
-
-import 'auth_repository.dart';
-// import '../storage/token_store.dart';
 
 class ApiClient {
   final Dio dio;
@@ -26,16 +24,15 @@ class ApiClient {
 
           handler.next(options);
         },
-
         onError: (error, handler) async {
-          // Bukan 401 → teruskan error
+          // Bukan 401, teruskan error.
           if (error.response?.statusCode != 401) {
             return handler.next(error);
           }
 
           final request = error.requestOptions;
 
-          // Jangan refresh request yang sama lebih dari sekali
+          // Jangan refresh request yang sama lebih dari sekali.
           if (request.extra['retried'] == true) {
             return handler.next(error);
           }
@@ -43,36 +40,34 @@ class ApiClient {
           request.extra['retried'] = true;
 
           try {
-            final refreshToken =
-                await tokenStore.readRefresh();
+            final refreshToken = await tokenStore.readRefresh();
 
-            // Refresh token tidak ada
-            if (refreshToken == null ||
-                refreshToken.isEmpty) {
+            // Refresh token tidak tersedia.
+            if (refreshToken == null || refreshToken.isEmpty) {
               await tokenStore.clear();
               return handler.next(error);
             }
 
-            // Minta access token baru
-            final session =
+            // Minta access token baru.
+            final newAccessToken =
                 await authRepository.refresh(refreshToken);
 
-            // Simpan token baru
+            // Simpan access token baru dan pertahankan refresh token.
             await tokenStore.save(
-              access: session.access,
-              refresh: session.refresh,
+              access: newAccessToken,
+              refresh: refreshToken,
             );
 
-            // Gunakan access token baru
+            // Gunakan access token baru.
             request.headers['Authorization'] =
-                'Bearer ${session.access}';
+                'Bearer $newAccessToken';
 
-            // Ulangi request sebelumnya
+            // Ulangi request sebelumnya.
             final response = await dio.fetch(request);
 
             return handler.resolve(response);
           } catch (_) {
-            // Refresh gagal → logout
+            // Refresh gagal, hapus token.
             await tokenStore.clear();
 
             return handler.next(error);
@@ -81,10 +76,4 @@ class ApiClient {
       ),
     );
   }
-}
-
-extension on String {
-  get access => null;
-
-  get refresh => null;
 }

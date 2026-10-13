@@ -43,7 +43,6 @@ class ApiErrors {
       case DioExceptionType.unknown:
         return 'Terjadi kesalahan. Silakan coba lagi.';
       case DioExceptionType.transformTimeout:
-        // TODO: Handle this case.
         throw UnimplementedError();
     }
   }
