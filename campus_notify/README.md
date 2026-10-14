@@ -99,33 +99,3 @@ Folder ini berisi dokumentasi evaluasi AI Challenge untuk penerapan Clean Archit
 [!hasil screenshots](screenshots/week7_flutter-analyze.png)
 
 
-# WEEK 7 
-# Dokumentasi AI Challenge — Campus Notify
-
-Folder ini berisi dokumentasi evaluasi AI Challenge untuk penerapan Clean Architecture pada aplikasi Campus Notify.
-
-## Isi Dokumentasi
-
-- `AI_CHALLENGE.md`: prompt AI, usulan struktur folder, pemetaan file, dan wiring Riverpod.
-- `DECISION_TABLE.md`: perbandingan usulan AI dan keputusan teknis final.
-- `VERIFICATION.md`: perintah grep dan hasil verifikasi arsitektur.
-
-## Checklist Sebelum Demo
-
-- [✓] Repository interface berada di domain.
-- [✓] Repository implementation berada di data.
-- [✓] Domain tidak mengimpor Flutter, Dio, SQLite, atau Firebase.
-- [✓] Entity tidak menangani serialisasi API.
-- [✓] UI tidak memanggil Dio secara langsung.
-- [✓] Wiring dependency menggunakan Riverpod.
-- [✓] Keputusan mengenai use case didokumentasikan.
-- [✓] Hasil tiga grep dicatat berdasarkan output aktual.
-- [✓] `flutter analyze` telah dijalankan.
-- [✓] Hasil `flutter test` dicatat secara jujur.
-
-[!hasil screenshots](screenshots/week7_flutter-analyze.png)
-[!hasil screenshots](screenshots/week7_struktur-folder.png)
-[!hasil screenshots](screenshots/week7_tampilan-andorid.png)
-[!Dokumentas](docs/AI_CHALLENGE.md)
-[!Dokumentas](docs/DECISION_TABLE.md)
-[!Dokumentas](docs/VERIFICATION.md)
