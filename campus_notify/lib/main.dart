@@ -1,3 +1,4 @@
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -6,52 +7,84 @@ import 'package:go_router/go_router.dart';
 
 import 'features/announcements/presentation/pages/announcement_page.dart';
 import 'features/auth/presentation/pages/login_page.dart';
+import 'features/auth/presentation/providers/auth_provider.dart';
 import 'messaging/push_service.dart';
 import 'pages/home_page.dart';
 import 'routes.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
-  return GoRouter(
+  final router = GoRouter(
     initialLocation: AppRoutes.login,
+    redirect: (context, state) {
+      final authState = ref.read(authStateProvider);
+
+      // Tunggu pemeriksaan token awal selesai.
+      if (authState.isLoading) {
+        return null;
+      }
+
+      final isLoggedIn = authState.asData?.value ?? false;
+      final isLoginPage =
+          state.matchedLocation == AppRoutes.login;
+
+      // Pengguna belum login diarahkan ke halaman login.
+      if (!isLoggedIn && !isLoginPage) {
+        return AppRoutes.login;
+      }
+
+      // Pengguna yang sudah login diarahkan ke halaman utama.
+      if (isLoggedIn && isLoginPage) {
+        return AppRoutes.home;
+      }
+
+      return null;
+    },
     routes: [
       GoRoute(
         path: AppRoutes.login,
-        builder: (context, state) {
-          return const LoginPage();
-        },
+        builder: (context, state) => const LoginPage(),
       ),
-
       GoRoute(
         path: AppRoutes.home,
-        builder: (context, state) {
-          return const HomePage();
-        },
+        builder: (context, state) => const HomePage(),
       ),
-
       GoRoute(
         path: AppRoutes.announcement,
-        builder: (context, state) {
-          return AnnouncementPage(id: state.pathParameters['id'] ?? '');
-        },
+        builder: (context, state) => AnnouncementPage(
+          id: state.pathParameters['id'] ?? '',
+        ),
       ),
     ],
   );
+
+  // Evaluasi ulang redirect saat status autentikasi berubah.
+  ref.listen<AsyncValue<bool>>(
+    authStateProvider,
+    (previous, next) {
+      router.refresh();
+    },
+  );
+
+  ref.onDispose(router.dispose);
+
+  return router;
 });
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 1. Firebase
+  // 1. Inisialisasi Firebase.
   await Firebase.initializeApp();
 
-  // 2. Background FCM handler
+  // 2. Registrasi background handler FCM.
   registerBackgroundHandler();
 
-  // 3. Local notification
+  // 3. Inisialisasi local notification.
   await initLocalNotifications();
 
-  // 4. Permission
-  final settings = await FirebaseMessaging.instance.requestPermission(
+  // 4. Meminta izin notifikasi.
+  final settings =
+      await FirebaseMessaging.instance.requestPermission(
     alert: true,
     badge: true,
     sound: true,
@@ -62,45 +95,62 @@ Future<void> main() async {
     '${settings.authorizationStatus}',
   );
 
-  // 5. Ambil FCM Token
+  // 5. Mengambil FCM token.
   final token = await FirebaseMessaging.instance.getToken();
-
   debugPrint('FCM TOKEN: $token');
 
-  // 6. Subscribe topic
-  await FirebaseMessaging.instance.subscribeToTopic('pengumuman-kampus');
+  // 6. Subscribe ke topic pengumuman.
+  await FirebaseMessaging.instance
+      .subscribeToTopic('pengumuman-kampus');
 
   debugPrint('Subscribed to topic: pengumuman-kampus');
 
-  runApp(const ProviderScope(child: CampusNotifyApp()));
+  // 7. Menjalankan aplikasi.
+  runApp(
+    const ProviderScope(
+      child: CampusNotifyApp(),
+    ),
+  );
 }
 
 class CampusNotifyApp extends ConsumerStatefulWidget {
-  const CampusNotifyApp({super.key});
+  const CampusNotifyApp({
+    super.key,
+    this.enablePushNotifications = true,
+  });
+
+  final bool enablePushNotifications;
 
   @override
-  ConsumerState<CampusNotifyApp> createState() => _CampusNotifyAppState();
+  ConsumerState<CampusNotifyApp> createState() =>
+      _CampusNotifyAppState();
 }
 
-class _CampusNotifyAppState extends ConsumerState<CampusNotifyApp> {
+class _CampusNotifyAppState
+    extends ConsumerState<CampusNotifyApp> {
   @override
   void initState() {
     super.initState();
 
+    // Nonaktifkan listener saat widget test jika diperlukan.
+    if (!widget.enablePushNotifications) return;
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
       final router = ref.read(routerProvider);
 
-      // Foreground + background click
+      // Notifikasi ketika aplikasi berada di foreground.
       listenForeground((route) {
         router.go(route);
       });
 
-      // Terminated
+      // Notifikasi yang diklik ketika aplikasi terminated.
       handleTerminated((route) {
         router.go(route);
       });
 
-      // Jika local notification diklik
+      // Deep link dari local notification.
       checkPendingDeepLink((route) {
         router.go(route);
       });

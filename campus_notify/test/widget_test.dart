@@ -1,9 +1,9 @@
 import 'package:campus_notify/main.dart';
 import 'package:campus_notify/routes.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 void main() {
   testWidgets('Campus Notify dapat dibuat', (tester) async {
@@ -12,19 +12,16 @@ void main() {
       routes: [
         GoRoute(
           path: AppRoutes.login,
-          builder: (context, state) => const Scaffold(
-            body: Text('Halaman Login'),
-          ),
+          builder:
+              (context, state) => const Scaffold(body: Text('Halaman Login')),
         ),
       ],
     );
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          routerProvider.overrideWith((ref) => testRouter),
-        ],
-        child: const CampusNotifyApp(),
+        overrides: [routerProvider.overrideWith((ref) => testRouter)],
+        child: const CampusNotifyApp(enablePushNotifications: false),
       ),
     );
 
