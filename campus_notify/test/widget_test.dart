@@ -12,19 +12,16 @@ void main() {
       routes: [
         GoRoute(
           path: AppRoutes.login,
-          builder: (context, state) => const Scaffold(
-            body: Text('Halaman Login'),
-          ),
+          builder:
+              (context, state) => const Scaffold(body: Text('Halaman Login')),
         ),
       ],
     );
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          routerProvider.overrideWith((ref) => testRouter),
-        ],
-        child: const CampusNotifyApp(),
+        overrides: [routerProvider.overrideWith((ref) => testRouter)],
+        child: const CampusNotifyApp(enablePushNotifications: false),
       ),
     );
 

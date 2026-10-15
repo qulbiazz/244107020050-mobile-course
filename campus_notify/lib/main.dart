@@ -1,3 +1,4 @@
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -16,23 +17,17 @@ final routerProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(
         path: AppRoutes.login,
-        builder: (context, state) {
-          return const LoginPage();
-        },
+        builder: (context, state) => const LoginPage(),
       ),
-
       GoRoute(
         path: AppRoutes.home,
-        builder: (context, state) {
-          return const HomePage();
-        },
+        builder: (context, state) => const HomePage(),
       ),
-
       GoRoute(
         path: AppRoutes.announcement,
-        builder: (context, state) {
-          return AnnouncementPage(id: state.pathParameters['id'] ?? '');
-        },
+        builder: (context, state) => AnnouncementPage(
+          id: state.pathParameters['id'] ?? '',
+        ),
       ),
     ],
   );
@@ -64,11 +59,12 @@ Future<void> main() async {
 
   // 5. Ambil FCM Token
   final token = await FirebaseMessaging.instance.getToken();
-
   debugPrint('FCM TOKEN: $token');
 
   // 6. Subscribe topic
-  await FirebaseMessaging.instance.subscribeToTopic('pengumuman-kampus');
+  await FirebaseMessaging.instance.subscribeToTopic(
+    'pengumuman-kampus',
+  );
 
   debugPrint('Subscribed to topic: pengumuman-kampus');
 
@@ -76,10 +72,16 @@ Future<void> main() async {
 }
 
 class CampusNotifyApp extends ConsumerStatefulWidget {
-  const CampusNotifyApp({super.key});
+  const CampusNotifyApp({
+    super.key,
+    this.enablePushNotifications = true,
+  });
+
+  final bool enablePushNotifications;
 
   @override
-  ConsumerState<CampusNotifyApp> createState() => _CampusNotifyAppState();
+  ConsumerState<CampusNotifyApp> createState() =>
+      _CampusNotifyAppState();
 }
 
 class _CampusNotifyAppState extends ConsumerState<CampusNotifyApp> {
@@ -87,7 +89,11 @@ class _CampusNotifyAppState extends ConsumerState<CampusNotifyApp> {
   void initState() {
     super.initState();
 
+    if (!widget.enablePushNotifications) return;
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
       final router = ref.read(routerProvider);
 
       // Foreground + background click
