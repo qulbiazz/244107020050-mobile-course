@@ -1,7 +1,7 @@
 import '../../domain/entities/note.dart';
 
 class NoteModel extends Note {
-  const NoteModel({
+  NoteModel({
     super.id,
     required super.title,
     super.body = '',
