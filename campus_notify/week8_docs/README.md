@@ -42,5 +42,8 @@
 ## DOKUEMENTASI
 - [Screenshots](../week8_docs/screenshots/grep_test.png)
 - [Screenshots](../week8_docs/screenshots/flutter_analyze_dan_flutter_test.png)
+- [Screenshots](../week8_docs/screenshots/tambah_pengumuman.png)
+- [Screenshots](../week8_docs/screenshots/tampilan_awal.png)
+- [Screenshots](../week8_docs/screenshots/tampilan_login.png)
 - [File Pendukung](../docs/ai-review-vs-keputusan.md)
 - [File Pendukung](../docs/review-checklist.md)
