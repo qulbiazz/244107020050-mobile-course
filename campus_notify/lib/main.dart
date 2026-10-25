@@ -1,4 +1,3 @@
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -24,8 +23,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
 
       final isLoggedIn = authState.asData?.value ?? false;
-      final isLoginPage =
-          state.matchedLocation == AppRoutes.login;
+      final isLoginPage = state.matchedLocation == AppRoutes.login;
 
       // Pengguna belum login diarahkan ke halaman login.
       if (!isLoggedIn && !isLoginPage) {
@@ -50,20 +48,17 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.announcement,
-        builder: (context, state) => AnnouncementPage(
-          id: state.pathParameters['id'] ?? '',
-        ),
+        builder:
+            (context, state) =>
+                AnnouncementPage(id: state.pathParameters['id'] ?? ''),
       ),
     ],
   );
 
   // Evaluasi ulang redirect saat status autentikasi berubah.
-  ref.listen<AsyncValue<bool>>(
-    authStateProvider,
-    (previous, next) {
-      router.refresh();
-    },
-  );
+  ref.listen<AsyncValue<bool>>(authStateProvider, (previous, next) {
+    router.refresh();
+  });
 
   ref.onDispose(router.dispose);
 
@@ -83,8 +78,7 @@ Future<void> main() async {
   await initLocalNotifications();
 
   // 4. Meminta izin notifikasi.
-  final settings =
-      await FirebaseMessaging.instance.requestPermission(
+  final settings = await FirebaseMessaging.instance.requestPermission(
     alert: true,
     badge: true,
     sound: true,
@@ -100,34 +94,24 @@ Future<void> main() async {
   debugPrint('FCM TOKEN: $token');
 
   // 6. Subscribe ke topic pengumuman.
-  await FirebaseMessaging.instance
-      .subscribeToTopic('pengumuman-kampus');
+  await FirebaseMessaging.instance.subscribeToTopic('pengumuman-kampus');
 
   debugPrint('Subscribed to topic: pengumuman-kampus');
 
   // 7. Menjalankan aplikasi.
-  runApp(
-    const ProviderScope(
-      child: CampusNotifyApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: CampusNotifyApp()));
 }
 
 class CampusNotifyApp extends ConsumerStatefulWidget {
-  const CampusNotifyApp({
-    super.key,
-    this.enablePushNotifications = true,
-  });
+  const CampusNotifyApp({super.key, this.enablePushNotifications = true});
 
   final bool enablePushNotifications;
 
   @override
-  ConsumerState<CampusNotifyApp> createState() =>
-      _CampusNotifyAppState();
+  ConsumerState<CampusNotifyApp> createState() => _CampusNotifyAppState();
 }
 
-class _CampusNotifyAppState
-    extends ConsumerState<CampusNotifyApp> {
+class _CampusNotifyAppState extends ConsumerState<CampusNotifyApp> {
   @override
   void initState() {
     super.initState();

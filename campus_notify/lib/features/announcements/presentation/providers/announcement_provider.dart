@@ -1,20 +1,44 @@
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 
-class Announcement {
-  const Announcement({
-    required this.id,
-    required this.title,
-    required this.content,
-    required this.createdAt,
-  });
+import '../../domain/entities/announcement.dart';
+import '../../domain/usecases/search_announcements.dart';
 
-  final String id;
-  final String title;
-  final String content;
-  final DateTime createdAt;
+class AnnouncementNotifier extends Notifier<List<Announcement>> {
+  @override
+  List<Announcement> build() => [];
+
+  void add(Announcement announcement) {
+    state = [announcement, ...state];
+  }
 }
 
 final announcementProvider =
-    StateProvider<List<Announcement>>((ref) => []);
+    NotifierProvider<AnnouncementNotifier, List<Announcement>>(
+      AnnouncementNotifier.new,
+    );
+
+class AnnouncementSearchNotifier extends Notifier<String> {
+  @override
+  String build() => '';
+
+  void updateQuery(String query) {
+    state = query;
+  }
+}
+
+final announcementSearchQueryProvider =
+    NotifierProvider<AnnouncementSearchNotifier, String>(
+      AnnouncementSearchNotifier.new,
+    );
+
+final searchAnnouncementsProvider = Provider<SearchAnnouncements>(
+  (ref) => const SearchAnnouncements(),
+);
+
+final filteredAnnouncementsProvider = Provider<List<Announcement>>((ref) {
+  final announcements = ref.watch(announcementProvider);
+  final query = ref.watch(announcementSearchQueryProvider);
+  final searchAnnouncements = ref.watch(searchAnnouncementsProvider);
+
+  return searchAnnouncements(announcements, query);
+});
