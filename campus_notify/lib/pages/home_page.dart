@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../features/announcements/domain/entities/announcement.dart';
 import '../features/announcements/presentation/providers/announcement_provider.dart';
 import '../features/auth/presentation/providers/auth_provider.dart';
+import '../routes.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -32,6 +34,11 @@ class HomePage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Campus Notify'),
         actions: [
+          IconButton(
+            tooltip: 'Asisten Kampus',
+            onPressed: () => context.push(AppRoutes.chat),
+            icon: const Icon(Icons.chat_outlined),
+          ),
           IconButton(
             tooltip: 'Logout',
             onPressed: () {

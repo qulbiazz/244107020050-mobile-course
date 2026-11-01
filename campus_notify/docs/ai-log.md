@@ -270,3 +270,65 @@ Pengumpulan tugas dibuat di
 `../09-week-9-ai-assisted-development/`, dengan README, salinan dokumen, dan
 folder screenshot. Uji manual emulator serta screenshot masih perlu dilengkapi
 oleh mahasiswa; dokumentasi tidak menyatakan bukti itu sudah tersedia.
+
+---
+
+# Praktikum 10 — AI Feature Integration Log
+
+## Fitur
+
+Asisten Kampus mengintegrasikan chat streaming. OCR dan pengenalan wajah
+dijalankan lokal sebelum gambar dipertimbangkan untuk unggah; speech-to-text
+menggunakan pengenalan offline jika perangkat mendukung Bahasa Indonesia.
+
+## Prompt sistem
+
+Prompt sistem yang dikirim ke Gemini:
+
+> Anda adalah Asisten Kampus untuk pertanyaan informasi umum. Gunakan bahasa
+> Indonesia yang jelas dan ringkas. Jangan meminta, mengulang, atau menebak
+> NIK, nomor telepon, alamat, kata sandi, identitas, maupun data pribadi.
+> Jangan mengarang jadwal atau kebijakan kampus; jika informasi tidak
+> tersedia, nyatakan keterbatasan dengan jelas.
+
+## User prompt
+
+Contoh prompt pengujian anonim:
+
+> Bagaimana cara menemukan pengumuman seminar kampus di aplikasi?
+
+Prompt aktual selalu berasal dari pesan pengguna yang telah melewati
+pemeriksaan data sensitif. Gambar dikirim hanya setelah pemeriksaan lokal dan
+konfirmasi eksplisit; suara tidak dikirim sebagai audio.
+
+## Output awal AI
+
+> Untuk menemukan pengumuman seminar, buka halaman utama Campus Notify dan
+> gunakan kolom pencarian pengumuman. Ketik kata kunci seperti “seminar” untuk
+> melihat pengumuman yang sesuai.
+
+**Catatan kejujuran:** teks di atas adalah contoh output awal ilustratif untuk
+prompt yang dicatat, bukan kutipan respons Gemini live. API key tidak tersedia
+dan request Gemini live tidak dijalankan selama pembuatan dokumen ini; jangan
+menganggap contoh ini sebagai output yang telah diverifikasi layanan AI.
+
+## Keputusan implementasi dan kontrol
+
+- Respons ditampilkan streaming; error API menampilkan fallback pengumuman
+  lokal dan tombol coba lagi.
+- Jawaban singkat, penolakan, atau jawaban tanpa kecocokan kata bermakna dengan
+  pertanyaan dianggap tidak relevan, tidak disimpan di cache, dan diganti
+  fallback lokal.
+- Batas biaya: 20 request per akun per hari pada perangkat ini. Cache respons
+  berlaku 24 jam; cache key adalah hash prompt/gambar dan tidak menyimpan prompt
+  asli. Respons yang terdeteksi berisi data pribadi tidak di-cache.
+- Cache akun dibersihkan saat logout. Kuota perangkat tidak menggantikan
+  penegakan kuota backend untuk produksi.
+
+## Verifikasi
+
+- `flutter analyze` — lulus, tidak ada isu.
+- `flutter test` — lulus.
+- `flutter build apk --debug` — lulus.
+- Screenshot historis hasil analyze/test tersedia di folder `screenshots/`;
+  tangkapan layar interaksi chat live belum direkam.

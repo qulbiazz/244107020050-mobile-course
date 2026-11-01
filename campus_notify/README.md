@@ -15,9 +15,6 @@
 3. Ketiga app state teruji dengan tabel bukti; klik masuk ke rute yang benar.✅
 4. Topik untuk broadcast, token untuk pesan personal.✅
 5. flutter analyze bersih dan semua test lulus.
-[!hasil screenshots](screenshots/flutter-analyze.png)
-[!hasil screenshots](screenshots/flutter-test.png)
-
 # Refleksi
 1. Mengapa refresh token tidak boleh disimpan di SharedPreferences? Apa risikonya bila bocor?
 SharedPreferences digunakan untuk penyimpanan data sederhana dan bukan dirancang sebagai tempat penyimpanan rahasia. Refresh token memiliki umur yang lebih panjang dan dapat digunakan untuk mendapatkan access token baru. Jika refresh token bocor, pihak lain berpotensi mempertahankan akses ke akun sampai token tersebut tidak berlaku atau dicabut.
@@ -49,6 +46,76 @@ Untuk informasi personal seperti nilai atau tagihan, token perangkat lebih sesua
 Bagian yang perlu diperiksa dan diperbaiki adalah lifecycle notification dan keamanan token. Implementasi akhir menggunakan background handler top-level, @pragma('vm:entry-point'), foreground local notification, onMessageOpenedApp, getInitialMessage, parsing data.route, serta onTokenRefresh.
 
 Selain itu, token tidak seharusnya dicetak secara penuh pada log atau dimasukkan ke screenshot dokumentasi.
+
+---
+
+# Praktikum 10 — Integrasi Fitur AI
+
+## Fitur yang diintegrasikan
+
+Campus Notify menyediakan Asisten Kampus dengan streaming jawaban AI,
+pemindaian OCR lokal dari kamera/galeri, input suara offline Bahasa Indonesia,
+dan deskripsi gambar setelah pemeriksaan privasi serta persetujuan pengguna.
+Inisialisasi Firebase/FCM berjalan setelah layar aplikasi tampil; jika push
+notification gagal disiapkan, aplikasi tetap dapat digunakan dan menampilkan
+peringatan beserta opsi untuk mencoba lagi.
+
+### Persiapan
+
+1. Jalankan `flutter pub get`.
+2. Sediakan Gemini API key melalui mekanisme aman aplikasi:
+   `AiService.saveApiKey(key)`. Jangan menaruh key di source code, README,
+   log, atau screenshot.
+3. Buka Asisten Kampus dari ikon chat di halaman utama. Input AI hanya untuk
+   informasi umum; jangan gunakan NIK, nomor telepon, alamat, atau data sensitif.
+
+## Bukti mesin hijau
+
+Jalankan dari root proyek (folder yang berisi `pubspec.yaml`):
+
+```powershell
+flutter analyze
+flutter test
+```
+
+Hasil verifikasi terakhir:
+
+| Perintah | Hasil |
+|---|---|
+| `flutter analyze` | Lulus — No issues found |
+| `flutter test` | Lulus — 30 test |
+| `flutter build apk --debug` | Lulus |
+
+## Risiko dan mitigasi
+
+| Risiko | Mitigasi |
+|---|---|
+| Data pribadi terkirim ke AI | Prompt teks diperiksa sebelum request. OCR dan deteksi wajah berjalan lokal; gambar dengan teks pribadi atau wajah ditahan. Unggah gambar memerlukan konfirmasi. |
+| Biaya AI meningkat | Maksimal 20 request per akun per hari pada perangkat; cache lokal berlaku 24 jam dan cache hit tidak memanggil API. |
+| API key atau prompt bocor lewat cache | API key disimpan menggunakan `flutter_secure_storage`; cache hanya menyimpan hash request dan jawaban terbatas, bukan prompt. Cache per akun dibersihkan saat logout. |
+| API gagal atau kuota habis | Tampilkan pesan dan fallback ke pengumuman kampus lokal yang relevan; tersedia tombol coba lagi. |
+| Jawaban tidak relevan | Validasi jawaban terhadap prompt; bila tidak lolos, tampilkan fallback lokal dan jangan simpan jawaban itu di cache. |
+
+> Batas 20 request ditegakkan di penyimpanan lokal perangkat. Produksi perlu
+> menerapkan kuota otoritatif lintas perangkat di backend.
+
+## Refleksi
+
+1. **Fitur AI dan alasan:** Asisten chat dipilih karena cocok untuk pertanyaan
+   umum kampus; OCR lokal membantu membaca pengumuman tanpa mengunggah dokumen.
+   Input suara memudahkan aksesibilitas dan input cepat.
+2. **Privasi:** NIK, nomor telepon, alamat, dan pola sensitif ditolak sebelum
+   request teks. OCR serta pengenalan wajah dijalankan di perangkat. Audio
+   dikenali offline. Gambar hanya diunggah setelah konfirmasi dan pemeriksaan.
+3. **Fallback:** saat AI error, kuota tercapai, atau jawaban tidak relevan, chat
+   menampilkan pengumuman lokal yang cocok dan opsi mencoba AI kembali.
+4. **Pelajaran UX:** pengguna perlu tahu dengan jelas kapan data diproses lokal
+   dan kapan akan meninggalkan perangkat; minta persetujuan tepat sebelum
+   unggah dan tampilkan jalur offline yang tetap berguna.
+
+Log prompt sistem, user prompt, dan output awal AI ada di
+[`docs/ai-log.md`](docs/ai-log.md). Bukti visual disimpan di
+[`screenshots/`](screenshots/).
 
 
 # WEEK 7 CLEAN ARCHITECTUR
@@ -97,5 +164,3 @@ Folder ini berisi dokumentasi evaluasi AI Challenge untuk penerapan Clean Archit
 [!hasil screenshots](screenshots/)
 [!hasil screenshots](screenshots/week7_flutter-analyze.png)
 [!hasil screenshots](screenshots/week7_flutter-analyze.png)
-
-

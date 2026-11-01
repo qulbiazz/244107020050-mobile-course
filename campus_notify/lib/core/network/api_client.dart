@@ -54,6 +54,7 @@ class ApiClient {
             await tokenStore.save(
               access: newAccessToken,
               refresh: refreshToken,
+              quotaUserId: await tokenStore.readQuotaUserId(),
             );
 
             // Gunakan access token baru.

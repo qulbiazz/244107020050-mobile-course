@@ -1,8 +1,17 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
+
 class AuthSession {
-  const AuthSession({required this.access, required this.refresh});
+  const AuthSession({
+    required this.access,
+    required this.refresh,
+    required this.quotaUserId,
+  });
 
   final String access;
   final String refresh;
+  final String quotaUserId;
 }
 
 class AuthRepository {
@@ -19,6 +28,8 @@ class AuthRepository {
     return AuthSession(
       access: 'mock-access-for-$email',
       refresh: 'mock-refresh-for-$email',
+      quotaUserId:
+          sha256.convert(utf8.encode(email.trim().toLowerCase())).toString(),
     );
   }
 
