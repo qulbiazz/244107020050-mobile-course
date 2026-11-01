@@ -58,66 +58,36 @@ class HomePage extends ConsumerWidget {
   }
 }
 
-class _AnnouncementList extends ConsumerWidget {
+class _AnnouncementList extends StatelessWidget {
   const _AnnouncementList();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final announcements = ref.watch(announcementProvider);
-    final query = ref.watch(announcementSearchQueryProvider);
-    final filteredAnnouncements = ref.watch(filteredAnnouncementsProvider);
-
-    return Column(
-      children: [
-        _AnnouncementSearchField(
-          query: query,
-          onChanged:
-              ref.read(announcementSearchQueryProvider.notifier).updateQuery,
-        ),
-        Expanded(
-          child: _AnnouncementResults(
-            announcements: filteredAnnouncements,
-            hasNoAnnouncements: announcements.isEmpty,
-            query: query,
-          ),
-        ),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => const Column(
+    children: [
+      RepaintBoundary(child: _AnnouncementSearchField()),
+      Expanded(child: _AnnouncementResults()),
+    ],
+  );
 }
 
-class _AnnouncementSearchField extends StatefulWidget {
-  const _AnnouncementSearchField({
-    required this.query,
-    required this.onChanged,
-  });
-
-  final String query;
-  final ValueChanged<String> onChanged;
+class _AnnouncementSearchField extends ConsumerStatefulWidget {
+  const _AnnouncementSearchField();
 
   @override
-  State<_AnnouncementSearchField> createState() =>
+  ConsumerState<_AnnouncementSearchField> createState() =>
       _AnnouncementSearchFieldState();
 }
 
-class _AnnouncementSearchFieldState extends State<_AnnouncementSearchField> {
+class _AnnouncementSearchFieldState
+    extends ConsumerState<_AnnouncementSearchField> {
   late final TextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.query);
-  }
-
-  @override
-  void didUpdateWidget(covariant _AnnouncementSearchField oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (_controller.text != widget.query) {
-      _controller.value = TextEditingValue(
-        text: widget.query,
-        selection: TextSelection.collapsed(offset: widget.query.length),
-      );
-    }
+    _controller = TextEditingController(
+      text: ref.read(announcementSearchQueryProvider),
+    );
   }
 
   @override
@@ -128,6 +98,15 @@ class _AnnouncementSearchFieldState extends State<_AnnouncementSearchField> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<String>(announcementSearchQueryProvider, (previous, query) {
+      if (_controller.text == query) return;
+
+      _controller.value = TextEditingValue(
+        text: query,
+        selection: TextSelection.collapsed(offset: query.length),
+      );
+    });
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: TextField(
@@ -138,26 +117,27 @@ class _AnnouncementSearchFieldState extends State<_AnnouncementSearchField> {
           prefixIcon: Icon(Icons.search),
           border: OutlineInputBorder(),
         ),
-        onChanged: widget.onChanged,
+        onChanged:
+            ref.read(announcementSearchQueryProvider.notifier).updateQuery,
       ),
     );
   }
 }
 
-class _AnnouncementResults extends StatelessWidget {
-  const _AnnouncementResults({
-    required this.announcements,
-    required this.hasNoAnnouncements,
-    required this.query,
-  });
-
-  final List<Announcement> announcements;
-  final bool hasNoAnnouncements;
-  final String query;
+class _AnnouncementResults extends ConsumerWidget {
+  const _AnnouncementResults();
 
   @override
-  Widget build(BuildContext context) {
-    if (hasNoAnnouncements && query.trim().isEmpty) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final announcements = ref.watch(filteredAnnouncementsProvider);
+    final hasNoAnnouncements = ref.watch(
+      announcementProvider.select((items) => items.isEmpty),
+    );
+    final isQueryEmpty = ref.watch(
+      announcementSearchQueryProvider.select((query) => query.trim().isEmpty),
+    );
+
+    if (hasNoAnnouncements && isQueryEmpty) {
       return const _NoAnnouncements();
     }
     if (announcements.isEmpty) {
@@ -167,6 +147,7 @@ class _AnnouncementResults extends StatelessWidget {
     return ListView.separated(
       padding: const EdgeInsets.all(16),
       itemCount: announcements.length,
+      addAutomaticKeepAlives: false,
       separatorBuilder: (_, __) => const SizedBox(height: 8),
       itemBuilder:
           (context, index) =>

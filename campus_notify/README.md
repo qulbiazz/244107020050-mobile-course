@@ -161,6 +161,29 @@ Folder ini berisi dokumentasi evaluasi AI Challenge untuk penerapan Clean Archit
 - [✓] `flutter analyze` telah dijalankan.
 - [✓] Hasil `flutter test` dicatat secara jujur.
 [!hasil screenshots](screenshots/week7_flutter-analyze.png)
+
 [!hasil screenshots](screenshots/)
 [!hasil screenshots](screenshots/week7_flutter-analyze.png)
 [!hasil screenshots](screenshots/week7_flutter-analyze.png)
+
+## Praktikum 3 — Profiling Flutter DevTools
+
+Profiling dilakukan pada Android Emulator dalam `--profile` mode. Sesi
+Performance menunjukkan 53 FPS rata-rata; pengukuran frame singkat setelah
+interaksi chat mencatat 34 frame dengan 10 janky frames (29.41%). Snapshot
+memori proses mencatat PSS 201,412 KB dan RSS 351,228 KB. Karena pengukuran
+dilakukan di emulator dan mencakup interaksi UI, hasil ini bersifat eksploratif,
+bukan baseline produksi.
+
+Laporan metode, hasil CPU sampling, batasan pengukuran, dan bukti:
+[`docs/flutter-devtools-profiling.md`](docs/flutter-devtools-profiling.md).
+
+## Praktikum 7 — Optimasi Performa
+
+Perubahan pada daftar pengumuman mempersempit cakupan rebuild, menambahkan
+`select` untuk status empty-state, memisahkan repaint kontrol pencarian, dan
+meniadakan keep-alive baris stateless. Baseline dan post-optimasi tersedia di
+[`docs/performance-report.md`](docs/performance-report.md). Verifikasi setelah
+perubahan: `flutter analyze` lulus (`No issues found`) dan `flutter test` lulus
+(30 test). Metrik emulator belum membuktikan peningkatan jank; laporan
+mendokumentasikan temuan, refleksi, dan keterbatasan pengukuran.
