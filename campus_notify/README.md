@@ -187,3 +187,115 @@ meniadakan keep-alive baris stateless. Baseline dan post-optimasi tersedia di
 perubahan: `flutter analyze` lulus (`No issues found`) dan `flutter test` lulus
 (30 test). Metrik emulator belum membuktikan peningkatan jank; laporan
 mendokumentasikan temuan, refleksi, dan keterbatasan pengukuran.
+
+---
+
+## Praktikum — Pengujian Perilaku dan Alur Aplikasi (Unit, Dependency, Widget, & Integration Test)
+
+Pengujian komprehensif dilakukan pada fitur utama aplikasi (**Pengumuman Kampus**), mencakup:
+1. **Pencatatan Perilaku & Skenario**: Kasus utama (*happy path*), kasus tepi (*edge case: trimming & case-insensitivity*), dan kasus kegagalan (*failure case: validasi input kosong & server failure*).
+2. **Uji Logika (Unit Test)**: Validasi aturan bisnis domain entitas `Announcement` dan `SearchAnnouncements` yang dikelompokkan dengan `group()` di [`test/announcement_logic_test.dart`](test/announcement_logic_test.dart).
+3. **Uji Dependensi**: Pemisahan akses data menggunakan `AnnouncementRepository`, diuji menggunakan `FakeSuccessAnnouncementRepository` dan `FakeErrorAnnouncementRepository` di [`test/announcement_repository_test.dart`](test/announcement_repository_test.dart).
+4. **Uji UI (Widget Test)**: Pengujian tampilan awal *empty state*, validasi masukan tidak valid, dan tindakan pengguna berhasil di [`test/announcement_ui_test.dart`](test/announcement_ui_test.dart).
+5. **Uji Alur Utama (Integration Test)**: Pengujian alur end-to-end lintas modul (`Login -> Beranda -> Tambah Pengumuman -> Cari -> Detail -> Logout`) di [`integration_test/app_test.dart`](integration_test/app_test.dart).
+
+Laporan lengkap skenario, arsitektur pengujian, dan bukti verifikasi tersedia di [`docs/praktikum-pengujian.md`](docs/praktikum-pengujian.md).
+
+### Hasil Verifikasi Mesin Hijau:
+| Perintah | Hasil |
+|---|---|
+| `flutter analyze` | Lulus — No issues found |
+| `flutter test` | Lulus — 62 tests passed |
+| `flutter test --coverage` | Lulus — 62 tests; cakupan baris seluruh `lib/` 27,44% (264/962) |
+| `flutter test integration_test/app_test.dart -d emulator-5554` | Lulus — All tests passed (Android API 35) |
+
+Angka cakupan hanya menunjukkan baris yang dijalankan, bukan bahwa semua
+perilaku telah diperiksa. Cakupan fitur pengumuman yang relevan lebih tinggi:
+`HomePage` 80,6%, use case pencarian dan provider 100%; cakupan keseluruhan
+turun karena fitur lain belum menjadi fokus tugas ini.
+
+### Temuan yang Belum Terselesaikan
+
+Tidak ada kegagalan pada tes atau analisis yang dijalankan. Namun, alur chat/AI,
+integrasi jaringan dan ML Kit, notifikasi push, serta penyimpanan autentikasi
+belum memiliki cakupan perilaku yang memadai. Tes integrasi menggunakan
+`InMemoryTokenStore` dan menonaktifkan push, sehingga tidak memverifikasi
+Firebase, layanan eksternal, atau penyimpanan token perangkat sebenarnya.
+
+### Refleksi
+
+1. **Bug yang mungkin terlewat:** pencarian yang menampilkan hasil salah untuk
+   variasi huruf besar-kecil atau query kosong, serta pengumuman dengan judul
+   atau isi kosong yang lolos validasi.
+2. **Fake yang digunakan:** fake repository memodelkan hasil sukses dan error
+   tanpa jaringan atau server sungguhan; `InMemoryTokenStore` mengisolasi sesi
+   integrasi tanpa plugin penyimpanan perangkat. Hasilnya konsisten dan dapat
+   diulang, termasuk ketika skenario error diuji.
+3. **Nilai widget vs integrasi:** widget test memeriksa tampilan dan validasi
+   form secara cepat serta terisolasi. Tes integrasi memastikan modul login,
+   navigasi, pengumuman, pencarian, detail, dan logout bekerja bersama pada
+   alur pengguna di emulator.
+
+---
+
+## Praktikum — Uji Fitur Daftar Tugas (Catatan)
+
+Di aplikasi saat ini, daftar tugas yang dimaksud direpresentasikan oleh fitur
+**Catatan** pada `NotesPage`; belum ada layar tugas terpisah atau navigasi ke
+halaman Catatan dari beranda. Pengujian berikut mencakup alur daftar yang sudah
+tersedia tanpa mengubah navigasi aplikasi.
+
+### Skenario
+
+| Skenario | Pengujian | Hasil yang diharapkan |
+|---|---|---|
+| Sukses | Daftar catatan berhasil dimuat; pemetaan model ke entitas | Judul, isi, ID, waktu, dan status tersimpan dipertahankan |
+| Input tidak valid | Judul kosong atau hanya whitespace | Entitas menolak nilai dengan `ArgumentError`; judul valid di-trim |
+| Daftar kosong | Repository mengembalikan daftar kosong | Empty state `Belum ada catatan.` ditampilkan |
+| Kegagalan data | Database gagal dibuka atau repository mengembalikan `Failure` | Error ditampilkan dan tidak disamarkan sebagai daftar kosong |
+| Pemulihan | Pengguna menekan `Coba Lagi` setelah error | Provider dimuat ulang dan catatan yang tersedia ditampilkan |
+
+Unit test di [`test/note_test.dart`](test/note_test.dart) memeriksa validasi
+judul, nilai default, dan round-trip pemetaan `NoteModel`. Pengujian
+[`test/note_repository_test.dart`](test/note_repository_test.dart) memakai fake
+repository untuk hasil sukses/gagal, menguji use case dan provider, serta
+memverifikasi kegagalan pembukaan database di implementasi repository.
+Widget test di [`test/notes_page_test.dart`](test/notes_page_test.dart)
+memeriksa empty state, hasil daftar, pesan error, dan interaksi retry.
+
+Tes integrasi [`integration_test/notes_flow_test.dart`](integration_test/notes_flow_test.dart)
+memasang `NotesPage` pada perangkat/emulator, memuat data melalui provider dan
+fake repository, lalu memastikan judul serta isi muncul. Ini memverifikasi
+integrasi daftar dan provider pada perangkat, tetapi bukan navigasi dari login
+atau operasi SQLite sungguhan karena halaman Catatan belum terhubung ke rute
+utama.
+
+### Hasil dan Analisis
+
+| Perintah | Hasil |
+|---|---|
+| `flutter test` | Lulus — 62 tes |
+| `flutter test --coverage` | Lulus — 62 tes; 264/962 baris (27,44%) pada seluruh `lib/` |
+| `flutter test integration_test/notes_flow_test.dart -d emulator-5554` | Lulus — 1 tes pada emulator Android API 35 |
+| `flutter analyze` | Lulus — No issues found |
+
+Cakupan area Catatan pada laporan tersebut: `NotesPage` 100%, entitas `Note`
+100%, use case `GetNotes` 100%, provider 85,7%, model `NoteModel` 95,2%, dan
+`NoteRepositoryImpl` 50%. Bagian database yang tidak tercakup sukses adalah
+interaksi `sqflite` aktual; tes repository menguji kegagalan membuka database,
+sedangkan perilaku daftar sukses diuji melalui fake. Persentase cakupan adalah
+petunjuk area yang dijalankan, bukan bukti lengkap untuk seluruh perilaku.
+
+### Refleksi
+
+1. Bug yang mungkin terlewat tanpa tes ini adalah judul whitespace yang
+   tersimpan, catatan yang hilang atau salah dipetakan saat dibaca, serta tombol
+   retry yang tidak memuat ulang daftar setelah kegagalan database.
+2. Fake repository menggantikan database lokal sehingga tes sukses dan gagal
+   berjalan tanpa kondisi perangkat, data lama, atau plugin SQLite; hasil tes
+   menjadi cepat dan dapat diulang. Kegagalan membuka database asli tetap
+   diperiksa dengan dependency injection pada repository.
+3. Widget test memeriksa empty state, isi daftar, pesan error, dan tombol retry
+   secara terisolasi. Tes integrasi memverifikasi bahwa provider dan halaman
+   daftar bekerja bersama pada perangkat dengan data repository; ia belum
+   menguji navigasi aplikasi maupun penyimpanan SQLite sebenarnya.
