@@ -6,7 +6,8 @@ import 'package:campus_notify/features/announcements/presentation/providers/anno
 
 class FakeSuccessAnnouncementRepository implements AnnouncementRepository {
   FakeSuccessAnnouncementRepository([List<Announcement>? initial])
-      : _items = initial != null ? List<Announcement>.from(initial) : <Announcement>[];
+    : _items =
+          initial != null ? List<Announcement>.from(initial) : <Announcement>[];
 
   final List<Announcement> _items;
 
@@ -71,41 +72,47 @@ void main() {
   });
 
   group('FakeErrorAnnouncementRepository (Skenario Error / Kegagalan)', () {
-    test('getAnnouncements melemparkan Exception saat server offline', () async {
-      final repo = FakeErrorAnnouncementRepository();
+    test(
+      'getAnnouncements melemparkan Exception saat server offline',
+      () async {
+        final repo = FakeErrorAnnouncementRepository();
 
-      expect(
-        () async => await repo.getAnnouncements(),
-        throwsA(
-          isA<Exception>().having(
-            (e) => e.toString(),
-            'message',
-            contains('Gagal memuat pengumuman: Server offline'),
+        expect(
+          () async => await repo.getAnnouncements(),
+          throwsA(
+            isA<Exception>().having(
+              (e) => e.toString(),
+              'message',
+              contains('Gagal memuat pengumuman: Server offline'),
+            ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
 
-    test('addAnnouncement melemparkan Exception saat koneksi terputus', () async {
-      final repo = FakeErrorAnnouncementRepository();
-      final item = Announcement(
-        id: '99',
-        title: 'Pengumuman Darurat',
-        content: 'Server sedang mengalami gangguan.',
-        createdAt: DateTime(2026, 11, 12),
-      );
+    test(
+      'addAnnouncement melemparkan Exception saat koneksi terputus',
+      () async {
+        final repo = FakeErrorAnnouncementRepository();
+        final item = Announcement(
+          id: '99',
+          title: 'Pengumuman Darurat',
+          content: 'Server sedang mengalami gangguan.',
+          createdAt: DateTime(2026, 11, 12),
+        );
 
-      expect(
-        () async => await repo.addAnnouncement(item),
-        throwsA(
-          isA<Exception>().having(
-            (e) => e.toString(),
-            'message',
-            contains('Gagal menyimpan pengumuman: Koneksi terputus'),
+        expect(
+          () async => await repo.addAnnouncement(item),
+          throwsA(
+            isA<Exception>().having(
+              (e) => e.toString(),
+              'message',
+              contains('Gagal menyimpan pengumuman: Koneksi terputus'),
+            ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
   });
 
   group('Provider dengan Fake Repository', () {
@@ -135,22 +142,25 @@ void main() {
       expect(state.first.title, 'Judul Percobaan');
     });
 
-    test('loadFromRepository melempar error saat repository mengalami kegagalan', () async {
-      final errorRepo = FakeErrorAnnouncementRepository();
+    test(
+      'loadFromRepository melempar error saat repository mengalami kegagalan',
+      () async {
+        final errorRepo = FakeErrorAnnouncementRepository();
 
-      final container = ProviderContainer(
-        overrides: [
-          announcementRepositoryProvider.overrideWithValue(errorRepo),
-        ],
-      );
-      addTearDown(container.dispose);
+        final container = ProviderContainer(
+          overrides: [
+            announcementRepositoryProvider.overrideWithValue(errorRepo),
+          ],
+        );
+        addTearDown(container.dispose);
 
-      final notifier = container.read(announcementProvider.notifier);
+        final notifier = container.read(announcementProvider.notifier);
 
-      expect(
-        () async => await notifier.loadFromRepository(),
-        throwsA(isA<Exception>()),
-      );
-    });
+        expect(
+          () async => await notifier.loadFromRepository(),
+          throwsA(isA<Exception>()),
+        );
+      },
+    );
   });
 }

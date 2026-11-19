@@ -4,8 +4,8 @@ class Announcement {
     required String title,
     required String content,
     required this.createdAt,
-  })  : title = _validateTitle(title),
-        content = _validateContent(content);
+  }) : title = _validateTitle(title),
+       content = _validateContent(content);
 
   final String id;
   final String title;

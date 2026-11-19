@@ -51,9 +51,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [
-            tokenStoreProvider.overrideWithValue(fakeTokenStore),
-          ],
+          overrides: [tokenStoreProvider.overrideWithValue(fakeTokenStore)],
           child: const CampusNotifyApp(enablePushNotifications: false),
         ),
       );
@@ -93,10 +91,19 @@ void main() {
       expect(find.byType(AlertDialog), findsOneWidget);
 
       // 6. Isi formulir pengumuman
-      final titleFieldFinder = find.widgetWithText(TextFormField, 'Judul pengumuman');
-      final contentFieldFinder = find.widgetWithText(TextFormField, 'Isi pengumuman');
+      final titleFieldFinder = find.widgetWithText(
+        TextFormField,
+        'Judul pengumuman',
+      );
+      final contentFieldFinder = find.widgetWithText(
+        TextFormField,
+        'Isi pengumuman',
+      );
 
-      await tester.enterText(titleFieldFinder, 'Jadwal Kuliah Pengganti Mobile');
+      await tester.enterText(
+        titleFieldFinder,
+        'Jadwal Kuliah Pengganti Mobile',
+      );
       await tester.enterText(
         contentFieldFinder,
         'Kuliah pengganti dilaksanakan pada hari Sabtu pukul 08.00 WIB.',
@@ -113,7 +120,9 @@ void main() {
       expect(find.text('Jadwal Kuliah Pengganti Mobile'), findsOneWidget);
 
       // 8. Uji interaksi pencarian
-      final searchFieldFinder = find.byKey(const Key('announcement-search-field'));
+      final searchFieldFinder = find.byKey(
+        const Key('announcement-search-field'),
+      );
       await tester.enterText(searchFieldFinder, 'Pengganti');
       await tester.pumpAndSettle();
 
@@ -125,7 +134,9 @@ void main() {
 
       expect(find.text('Detail Pengumuman'), findsOneWidget);
       expect(
-        find.text('Kuliah pengganti dilaksanakan pada hari Sabtu pukul 08.00 WIB.'),
+        find.text(
+          'Kuliah pengganti dilaksanakan pada hari Sabtu pukul 08.00 WIB.',
+        ),
         findsOneWidget,
       );
 

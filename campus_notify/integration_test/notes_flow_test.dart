@@ -1,11 +1,13 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
+
 import 'package:campus_notify/core/failures.dart';
 import 'package:campus_notify/features/notes/domain/entities/note.dart';
 import 'package:campus_notify/features/notes/domain/repositories/note_repository.dart';
 import 'package:campus_notify/features/notes/presentation/pages/notes_page.dart';
 import 'package:campus_notify/features/notes/presentation/providers/notes_providers.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 class InMemoryNoteRepository implements NoteRepository {
   @override

@@ -14,8 +14,10 @@ class FakeNoteRepository implements NoteRepository {
   Failure? failure;
 
   @override
-  Future<({List<Note> notes, Failure? failure})> fetchNotes() async =>
-      (notes: notes, failure: failure);
+  Future<({List<Note> notes, Failure? failure})> fetchNotes() async => (
+    notes: notes,
+    failure: failure,
+  );
 
   @override
   Future<({Note? note, Failure? failure})> addNote({
@@ -43,7 +45,9 @@ void main() {
     expect(find.text('Belum ada catatan.'), findsOneWidget);
   });
 
-  testWidgets('menampilkan catatan yang dimuat dari repository', (tester) async {
+  testWidgets('menampilkan catatan yang dimuat dari repository', (
+    tester,
+  ) async {
     final repository = FakeNoteRepository(
       notes: [
         Note(
@@ -72,10 +76,7 @@ void main() {
     await tester.pumpWidget(buildNotesPage(repository));
     await tester.pumpAndSettle();
 
-    expect(
-      find.textContaining('Gagal memuat catatan:'),
-      findsOneWidget,
-    );
+    expect(find.textContaining('Gagal memuat catatan:'), findsOneWidget);
 
     repository
       ..failure = null

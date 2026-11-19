@@ -299,3 +299,36 @@ petunjuk area yang dijalankan, bukan bukti lengkap untuk seluruh perilaku.
    secara terisolasi. Tes integrasi memverifikasi bahwa provider dan halaman
    daftar bekerja bersama pada perangkat dengan data repository; ia belum
    menguji navigasi aplikasi maupun penyimpanan SQLite sebenarnya.
+
+---
+
+## Praktikum Minggu 13 — CI/CD Automation dengan GitHub Actions
+
+Otomatisasi pengujian dan pembangunan aplikasi menggunakan pipeline CI/CD pada GitHub Actions: [`.github/workflows/flutter-ci.yml`](.github/workflows/flutter-ci.yml).
+
+### Alur Pipeline Otomatis:
+1. **Pemicu Event**: Berjalan pada setiap `push` dan `pull_request` ke branch `main`, serta mendukung eksekusi manual via `workflow_dispatch`.
+2. **Environment Runner**: Menyiapkan runner `ubuntu-latest` dengan JDK 17 (Temurin) dan Flutter SDK stabil (`channel: stable`).
+3. **Format & Analisis Statis**:
+   - `dart format --output=none --set-exit-if-changed .` memastikan kepatuhan gaya penulisan kode.
+   - `flutter analyze --fatal-infos` memastikan tidak ada peringatan atau kesalahan semantik.
+4. **Pengujian Otomatis & Coverage**:
+   - `flutter test --coverage` mengeksekusi 62 unit dan widget test secara terisolasi.
+5. **Kompilasi Rilis & Penyimpanan Artefak**:
+   - `flutter build apk --release` menghasilkan biner APK untuk pengujian internal.
+   - `flutter build appbundle --release` menghasilkan bundel AAB untuk Google Play Store.
+   - `actions/upload-artifact@v4` mengunggah kedua artefak dengan masa retensi 7 hari.
+
+### Hasil Verifikasi Mesin Hijau (Lokal):
+| Perintah | Hasil | Status |
+|---|---|---|
+| `dart format --output=none --set-exit-if-changed .` | 41 berkas diperiksa, 0 perubahan | Lulus |
+| `flutter analyze --fatal-infos` | No issues found | Lulus |
+| `flutter test --coverage` | 62 tests passed, coverage tergenerate | Lulus |
+
+### Versioning & Keamanan:
+- **Versi Aplikasi**: Ditingkatkan ke `1.1.0+2` mengikuti Semantic Versioning.
+- **Git Tag**: Diberikan label `v1.1.0` untuk penautan commit dan artefak.
+- **Batasan Rahasia**: Nilai rahasia signing dilindungi di luar repositori (GitHub Secrets); `--dart-define` tidak diperlakukan sebagai tempat menyimpan kunci privat.
+
+Laporan detail, arsitektur alur, evaluasi perbaikan lokal, dan refleksi praktikum tersedia di [`docs/praktikum-cicd.md`](docs/praktikum-cicd.md).

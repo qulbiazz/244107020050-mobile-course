@@ -14,20 +14,26 @@ void main() {
 
       expect(announcement.id, 'ann-1');
       expect(announcement.title, 'Seminar Nasional Teknologi');
-      expect(announcement.content, 'Seminar akan diselenggarakan di Gedung Serbaguna.');
-    });
-
-    test('menghapus spasi di awal dan akhir pada judul dan konten (edge case: trimming)', () {
-      final announcement = Announcement(
-        id: 'ann-2',
-        title: '   Jadwal KRS Semester Genap   ',
-        content: '   Pengisian KRS dibuka mulai tanggal 1.   ',
-        createdAt: DateTime(2026, 11, 10),
+      expect(
+        announcement.content,
+        'Seminar akan diselenggarakan di Gedung Serbaguna.',
       );
-
-      expect(announcement.title, 'Jadwal KRS Semester Genap');
-      expect(announcement.content, 'Pengisian KRS dibuka mulai tanggal 1.');
     });
+
+    test(
+      'menghapus spasi di awal dan akhir pada judul dan konten (edge case: trimming)',
+      () {
+        final announcement = Announcement(
+          id: 'ann-2',
+          title: '   Jadwal KRS Semester Genap   ',
+          content: '   Pengisian KRS dibuka mulai tanggal 1.   ',
+          createdAt: DateTime(2026, 11, 10),
+        );
+
+        expect(announcement.title, 'Jadwal KRS Semester Genap');
+        expect(announcement.content, 'Pengisian KRS dibuka mulai tanggal 1.');
+      },
+    );
 
     test('menolak judul kosong dengan ArgumentError (failure case)', () {
       expect(
@@ -41,41 +47,50 @@ void main() {
       );
     });
 
-    test('menolak judul yang hanya berisi whitespace dengan ArgumentError (failure case)', () {
-      expect(
-        () => Announcement(
-          id: 'ann-err-2',
-          title: '   \t \n  ',
-          content: 'Konten pengumuman',
-          createdAt: DateTime(2026, 11, 10),
-        ),
-        throwsArgumentError,
-      );
-    });
+    test(
+      'menolak judul yang hanya berisi whitespace dengan ArgumentError (failure case)',
+      () {
+        expect(
+          () => Announcement(
+            id: 'ann-err-2',
+            title: '   \t \n  ',
+            content: 'Konten pengumuman',
+            createdAt: DateTime(2026, 11, 10),
+          ),
+          throwsArgumentError,
+        );
+      },
+    );
 
-    test('menolak konten pengumuman kosong dengan ArgumentError (failure case)', () {
-      expect(
-        () => Announcement(
-          id: 'ann-err-3',
-          title: 'Judul Valid',
-          content: '',
-          createdAt: DateTime(2026, 11, 10),
-        ),
-        throwsArgumentError,
-      );
-    });
+    test(
+      'menolak konten pengumuman kosong dengan ArgumentError (failure case)',
+      () {
+        expect(
+          () => Announcement(
+            id: 'ann-err-3',
+            title: 'Judul Valid',
+            content: '',
+            createdAt: DateTime(2026, 11, 10),
+          ),
+          throwsArgumentError,
+        );
+      },
+    );
 
-    test('menolak konten pengumuman yang hanya berisi whitespace dengan ArgumentError (failure case)', () {
-      expect(
-        () => Announcement(
-          id: 'ann-err-4',
-          title: 'Judul Valid',
-          content: '     ',
-          createdAt: DateTime(2026, 11, 10),
-        ),
-        throwsArgumentError,
-      );
-    });
+    test(
+      'menolak konten pengumuman yang hanya berisi whitespace dengan ArgumentError (failure case)',
+      () {
+        expect(
+          () => Announcement(
+            id: 'ann-err-4',
+            title: 'Judul Valid',
+            content: '     ',
+            createdAt: DateTime(2026, 11, 10),
+          ),
+          throwsArgumentError,
+        );
+      },
+    );
   });
 
   group('SearchAnnouncements Business Rules', () {
@@ -101,23 +116,32 @@ void main() {
       expect(results.first.id, '1');
     });
 
-    test('pencarian tidak peka terhadap huruf besar-kecil (case-insensitive)', () {
-      final results = search(sampleAnnouncements, 'uJiAn');
-      expect(results.length, 1);
-      expect(results.first.id, '2');
-    });
+    test(
+      'pencarian tidak peka terhadap huruf besar-kecil (case-insensitive)',
+      () {
+        final results = search(sampleAnnouncements, 'uJiAn');
+        expect(results.length, 1);
+        expect(results.first.id, '2');
+      },
+    );
 
-    test('query kosong atau hanya spasi mengembalikan seluruh daftar pengumuman (edge case)', () {
-      final resultsEmpty = search(sampleAnnouncements, '');
-      expect(resultsEmpty.length, 2);
+    test(
+      'query kosong atau hanya spasi mengembalikan seluruh daftar pengumuman (edge case)',
+      () {
+        final resultsEmpty = search(sampleAnnouncements, '');
+        expect(resultsEmpty.length, 2);
 
-      final resultsSpaces = search(sampleAnnouncements, '   ');
-      expect(resultsSpaces.length, 2);
-    });
+        final resultsSpaces = search(sampleAnnouncements, '   ');
+        expect(resultsSpaces.length, 2);
+      },
+    );
 
-    test('query yang tidak cocok menghasilkan daftar kosong (failure case)', () {
-      final results = search(sampleAnnouncements, 'Pesta Wisuda Virtual');
-      expect(results, isEmpty);
-    });
+    test(
+      'query yang tidak cocok menghasilkan daftar kosong (failure case)',
+      () {
+        final results = search(sampleAnnouncements, 'Pesta Wisuda Virtual');
+        expect(results, isEmpty);
+      },
+    );
   });
 }

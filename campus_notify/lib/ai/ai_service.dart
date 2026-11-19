@@ -157,13 +157,12 @@ class AiService {
     final mimeType = _imageMimeType(imageFile.path);
     final imageBytes = await imageFile.readAsBytes();
     final encodedImage = base64Encode(imageBytes);
-    final cacheKey = sha256
-        .convert([
+    final cacheKey =
+        sha256.convert([
           ...utf8.encode(systemPrompt),
           ...utf8.encode(prompt),
           ...imageBytes,
-        ])
-        .toString();
+        ]).toString();
     return _requestStream([
       {'text': prompt},
       {
@@ -181,13 +180,12 @@ class AiService {
       );
     }
 
-    final cacheKey = sha256
-        .convert(
-          utf8.encode(
-            '$systemPrompt\n${question.trim().toLowerCase()}',
-          ),
-        )
-        .toString();
+    final cacheKey =
+        sha256
+            .convert(
+              utf8.encode('$systemPrompt\n${question.trim().toLowerCase()}'),
+            )
+            .toString();
     yield* _requestStream(
       [
         {'text': question},

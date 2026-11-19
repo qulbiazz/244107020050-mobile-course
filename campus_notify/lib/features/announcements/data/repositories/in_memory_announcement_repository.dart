@@ -3,7 +3,8 @@ import '../../domain/repositories/announcement_repository.dart';
 
 class InMemoryAnnouncementRepository implements AnnouncementRepository {
   InMemoryAnnouncementRepository([List<Announcement>? initial])
-      : _items = initial != null ? List<Announcement>.from(initial) : <Announcement>[];
+    : _items =
+          initial != null ? List<Announcement>.from(initial) : <Announcement>[];
 
   final List<Announcement> _items;
 

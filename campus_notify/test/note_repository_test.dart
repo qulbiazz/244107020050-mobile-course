@@ -50,16 +50,19 @@ void main() {
       expect(result.notes, [sampleNote]);
     });
 
-    test('mengembalikan failure tanpa catatan saat sumber data gagal', () async {
-      final repository = FakeNoteRepository(
-        failure: const LocalFailure('database tidak tersedia'),
-      );
+    test(
+      'mengembalikan failure tanpa catatan saat sumber data gagal',
+      () async {
+        final repository = FakeNoteRepository(
+          failure: const LocalFailure('database tidak tersedia'),
+        );
 
-      final result = await repository.fetchNotes();
+        final result = await repository.fetchNotes();
 
-      expect(result.notes, isEmpty);
-      expect(result.failure?.message, 'database tidak tersedia');
-    });
+        expect(result.notes, isEmpty);
+        expect(result.failure?.message, 'database tidak tersedia');
+      },
+    );
   });
 
   group('GetNotes and notes provider', () {
@@ -108,28 +111,34 @@ void main() {
   });
 
   group('NoteRepositoryImpl database failures', () {
-    test('fetchNotes mengembalikan failure jika database tidak dapat dibuka', () async {
-      final repository = NoteRepositoryImpl(
-        openDb: () async => throw StateError('database unavailable'),
-      );
+    test(
+      'fetchNotes mengembalikan failure jika database tidak dapat dibuka',
+      () async {
+        final repository = NoteRepositoryImpl(
+          openDb: () async => throw StateError('database unavailable'),
+        );
 
-      final result = await repository.fetchNotes();
+        final result = await repository.fetchNotes();
 
-      expect(result.notes, isEmpty);
-      expect(result.failure, isA<LocalFailure>());
-      expect(result.failure!.message, contains('Gagal membaca catatan'));
-    });
+        expect(result.notes, isEmpty);
+        expect(result.failure, isA<LocalFailure>());
+        expect(result.failure!.message, contains('Gagal membaca catatan'));
+      },
+    );
 
-    test('addNote mengembalikan failure jika database tidak dapat dibuka', () async {
-      final repository = NoteRepositoryImpl(
-        openDb: () async => throw StateError('database unavailable'),
-      );
+    test(
+      'addNote mengembalikan failure jika database tidak dapat dibuka',
+      () async {
+        final repository = NoteRepositoryImpl(
+          openDb: () async => throw StateError('database unavailable'),
+        );
 
-      final result = await repository.addNote(title: 'Catatan baru');
+        final result = await repository.addNote(title: 'Catatan baru');
 
-      expect(result.note, isNull);
-      expect(result.failure, isA<LocalFailure>());
-      expect(result.failure!.message, contains('Gagal menyimpan catatan'));
-    });
+        expect(result.note, isNull);
+        expect(result.failure, isA<LocalFailure>());
+        expect(result.failure!.message, contains('Gagal menyimpan catatan'));
+      },
+    );
   });
 }
