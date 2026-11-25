@@ -23,7 +23,7 @@ Setelah seluruh tahapan otomatisasi CI/CD diimplementasikan pada minggu sebelumn
 | **Format Rilis** | Android App Bundle (`.aab`) | Standar wajib Google Play Store modern |
 | **Target SDK / Min SDK** | `compileSdk 36`, `targetSdk 36`, `minSdk 23` | Kompatibel dengan Android 6.0 Marshmallow hingga Android 15 |
 | **Target Track Distribusi** | Google Play Internal Testing / Firebase App Distribution | Jalur pengujian privat terbatas (*closed beta*) |
-| **Basis Branch / Commit** | `main` / `6cc524e` (Jobsheet 13 base) + Perubahan Rilis Minggu 14 | Lulus seluruh pengujian unit, widget, dan analisis statis |
+| **Basis Branch / Commit** | `main` / `5d20ed2` (Kandidat Rilis Minggu 14) | Lulus seluruh pengujian unit, widget, dan analisis statis |
 
 ---
 
