@@ -1,9 +1,12 @@
+import 'dart:ui';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'core/monitoring/telemetry_service.dart';
 import 'features/chat_screen.dart';
 import 'features/announcements/presentation/pages/announcement_page.dart';
 import 'features/auth/presentation/pages/login_page.dart';
@@ -72,6 +75,19 @@ final routerProvider = Provider<GoRouter>((ref) {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    await Firebase.initializeApp();
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
+    await TelemetryService.instance.initialize();
+  } catch (e) {
+    debugPrint('[main] Firebase/Telemetry init fallback: $e');
+  }
+
   runApp(const ProviderScope(child: CampusNotifyApp()));
 }
 
@@ -105,7 +121,10 @@ class _CampusNotifyAppState extends ConsumerState<CampusNotifyApp> {
     setState(() => _pushSetupInProgress = true);
 
     try {
-      await Firebase.initializeApp();
+      if (Firebase.apps.isEmpty) {
+        await Firebase.initializeApp();
+      }
+      await TelemetryService.instance.initialize();
       registerBackgroundHandler();
       await initLocalNotifications();
 
@@ -139,6 +158,11 @@ class _CampusNotifyAppState extends ConsumerState<CampusNotifyApp> {
     } catch (error, stackTrace) {
       debugPrint('Push notification initialization failed: $error');
       debugPrintStack(stackTrace: stackTrace);
+      await TelemetryService.instance.recordNonFatalError(
+        error: error,
+        stackTrace: stackTrace,
+        reason: 'Push notification initialization failure',
+      );
 
       if (mounted) {
         setState(() {

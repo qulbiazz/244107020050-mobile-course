@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/monitoring/telemetry_service.dart';
 import '../features/announcements/domain/entities/announcement.dart';
 import '../features/announcements/presentation/providers/announcement_provider.dart';
 import '../features/auth/presentation/providers/auth_provider.dart';
@@ -9,6 +10,147 @@ import '../routes.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
+
+  Future<void> _showBetaTestingDialog(BuildContext context) async {
+    await showDialog<void>(
+      context: context,
+      builder:
+          (dialogContext) => AlertDialog(
+            title: const Row(
+              children: [
+                Icon(Icons.science_outlined, color: Colors.deepPurple),
+                SizedBox(width: 8),
+                Text('Beta Testing & Telemetry'),
+              ],
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Versi: 1.2.0 (Build 3) - Beta Candidate\nTrack: Internal Testing\n\n'
+                    'Pemicu telemetry ke Firebase Console:',
+                    style: TextStyle(fontSize: 13),
+                  ),
+                  const Divider(height: 24),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    leading: const Icon(
+                      Icons.analytics_outlined,
+                      color: Colors.blue,
+                    ),
+                    title: const Text('Kirim Event Feedback Beta'),
+                    subtitle: const Text(
+                      'Event: beta_feedback_sent (Non-sensitif)',
+                    ),
+                    onTap: () async {
+                      Navigator.pop(dialogContext);
+                      await TelemetryService.instance.logBetaFeedbackSent(
+                        screenName: 'home',
+                        category: 'internal_tester_feedback',
+                      );
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              "Event 'beta_feedback_sent' dicatat ke Firebase Analytics.",
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    leading: const Icon(
+                      Icons.report_problem_outlined,
+                      color: Colors.orange,
+                    ),
+                    title: const Text('Kirim Error Non-Fatal'),
+                    subtitle: const Text(
+                      'Uji laporan Firebase Crashlytics tanpa force close',
+                    ),
+                    onTap: () async {
+                      Navigator.pop(dialogContext);
+                      await TelemetryService.instance.recordNonFatalError(
+                        error: StateError(
+                          'Simulasi non-fatal error pengujian beta v1.2.0',
+                        ),
+                        reason:
+                            'Verifikasi pipeline Crashlytics tester internal',
+                      );
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Non-fatal error uji dikirim ke Crashlytics.',
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    leading: const Icon(
+                      Icons.dangerous_outlined,
+                      color: Colors.red,
+                    ),
+                    title: const Text('Simulasi Fatal Crash'),
+                    subtitle: const Text(
+                      'Uji penanganan crash fatal Crashlytics',
+                    ),
+                    onTap: () {
+                      Navigator.pop(dialogContext);
+                      showDialog<void>(
+                        context: context,
+                        builder:
+                            (confirmContext) => AlertDialog(
+                              title: const Text('Konfirmasi Simulasi Crash'),
+                              content: const Text(
+                                'Aplikasi akan dipaksa crash untuk memverifikasi pelaporan fatal Crashlytics. Lanjutkan?',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed:
+                                      () => Navigator.pop(confirmContext),
+                                  child: const Text('Batal'),
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(confirmContext);
+                                    TelemetryService.instance
+                                        .triggerTestFatalCrash();
+                                  },
+                                  child: const Text(
+                                    'Crash Sekarang',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ],
+                            ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text('Tutup'),
+              ),
+            ],
+          ),
+    );
+  }
 
   Future<void> _showAddAnnouncementDialog(
     BuildContext context,
@@ -34,6 +176,12 @@ class HomePage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Campus Notify'),
         actions: [
+          IconButton(
+            key: const Key('beta-telemetry-button'),
+            tooltip: 'Beta Feedback & Telemetry',
+            onPressed: () => _showBetaTestingDialog(context),
+            icon: const Icon(Icons.bug_report_outlined),
+          ),
           IconButton(
             tooltip: 'Asisten Kampus',
             onPressed: () => context.push(AppRoutes.chat),
